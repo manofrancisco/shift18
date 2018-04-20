@@ -2,6 +2,7 @@
 import os
 import sqlite3
 import requests
+import json
 from random import shuffle
 from flask import Flask, request, jsonify, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -66,7 +67,7 @@ def add_entry(title, text):
                  [title, text])
     db.commit()
     flash('New entry was successfully posted')
-    return jsonify({"title":title});
+    return jsonify({"title":title, "text":text});
 
 
 
@@ -98,6 +99,9 @@ def show_entries():
     db = get_db()
     cur = db.execute('select title, text from entries order by id desc')
     entries = cur.fetchall()
+
+    for entry in entries:
+        print(json.dumps(list(entry)))
 
     print(entries)
 

@@ -1,6 +1,30 @@
-drop table if exists entries;
-create table entries (
+drop table if exists users;
+create table users (
   id integer primary key autoincrement,
-  title text not null,
-  'text' text not null
+  facebook_id text,
+  username text,
+  score_9 integer default 0,
+  score_10 integer default 0,
+  score_11 integer default 0,
+  score_12 integer default 0,
+  score_13 integer default 0,
+  score_14 integer default 0,
+  score_15 integer default 0,
+  score_16 integer default 0,
+  score_17 integer default 0,
+  score_18 integer default 0,
+  score_19 integer default 0,
+  score_20 integer default 0,
+  score_21 integer default 0,
+  score_22 integer default 0,
+  score_23 integer default 0,
+  score_24 integer default 0,
+  score_25 integer default 0,
+  score_26 integer default 0,
+  score_27 integer default 0,
+  score_28 integer default 0,
+  score_29 integer default 0,
+  score_30 integer default 0,
+  score_31 integer default 0,
+  score_32 integer default 0
 );

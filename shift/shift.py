@@ -63,7 +63,7 @@ def initdb_command():
 @app.route('/add/<title>/<text>', methods=['GET', 'POST'])
 def add_entry(title, text):
     db = get_db()
-    db.execute('insert into entries (title, text) values (?, ?)',
+    db.execute('insert into users (title, text) values (?, ?)',
                  [title, text])
     db.commit()
     flash('New entry was successfully posted')
@@ -82,7 +82,7 @@ def login():
         else:
             session['logged_in'] = True
             flash('You were logged in')
-            return redirect(url_for('show_entries'))
+            return redirect(url_for('show_users'))
     return render_template('login.html', error=error)
 
 
@@ -90,21 +90,24 @@ def login():
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_users'))
 
 
-@app.route('/')
-def show_entries():
 
+@app.route('/get_question/<facebook_id>', methods=['GET', 'POST'])
+def get_question(facebook_id):
     db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
+    cur = db.execute('select * from users where facebook_id =' + facebook_id)
+    user = cur.fetchone()
 
-    for entry in entries:
-        print(json.dumps(list(entry)))
+    if not user:
+        db.execute('insert into users (facebook_id) values (?)',
+                     [facebook_id])
+        db.commit()
+        cur = db.execute('select * from users where facebook_id =' + facebook_id)
+        user = cur.fetchone()
 
-    print(entries)
-
+    print(json.dumps(list(user)))
 
     req = requests.get('https://opentdb.com/api.php?amount=1&type=multiple', )
     dic = req.json()
@@ -126,3 +129,18 @@ def show_entries():
     print(text)
 
     return text
+
+
+@app.route('/')
+def show_users():
+
+    db = get_db()
+    cur = db.execute('select id, username from users order by id desc')
+    users = cur.fetchall()
+
+    for user in users:
+        print(json.dumps(list(user)))
+    print(users)
+
+
+    return "oi"

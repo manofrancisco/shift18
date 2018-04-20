@@ -1,0 +1,3 @@
+graft shift/templates
+graft shift/static
+include shift/schema.sql

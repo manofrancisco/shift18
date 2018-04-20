@@ -1,0 +1,9 @@
+MANIFEST.in
+shift/__init__.py
+shift/schema.sql
+shift/shift.py
+shift.egg-info/PKG-INFO
+shift.egg-info/SOURCES.txt
+shift.egg-info/dependency_links.txt
+shift.egg-info/requires.txt
+shift.egg-info/top_level.txt

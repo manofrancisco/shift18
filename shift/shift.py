@@ -3,7 +3,7 @@ import os
 import sqlite3
 import requests
 from random import shuffle
-from flask import Flask, request, session, g, redirect, url_for, abort, \
+from flask import Flask, request, jsonify, session, g, redirect, url_for, abort, \
      render_template, flash
 
 
@@ -58,8 +58,50 @@ def initdb_command():
     print('Initialized the database.')
 
 
+
+@app.route('/add/<title>/<text>', methods=['GET', 'POST'])
+def add_entry(title, text):
+    db = get_db()
+    db.execute('insert into entries (title, text) values (?, ?)',
+                 [title, text])
+    db.commit()
+    flash('New entry was successfully posted')
+    return jsonify({"title":title});
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'Invalid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+    return render_template('login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('show_entries'))
+
+
 @app.route('/')
 def show_entries():
+
+    db = get_db()
+    cur = db.execute('select title, text from entries order by id desc')
+    entries = cur.fetchall()
+
+    print(entries)
+
+
     req = requests.get('https://opentdb.com/api.php?amount=1&type=multiple', )
     dic = req.json()
     category = dic.get("results")[0].get("category")

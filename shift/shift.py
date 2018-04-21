@@ -131,6 +131,8 @@ def register_answer(facebook_id, cat, correct):
         statement_score = "update users set score_" + str(cat) + "=" + str(score) + " where facebook_id = '" + str(facebook_id) + "'"
         db.execute(statement_score)
         db.commit()
+    else:
+        score = cols[15 + category_index]
     return jsonify({"count": count, "score": score})
 
 

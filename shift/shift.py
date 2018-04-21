@@ -162,10 +162,8 @@ def get_question(facebook_id):
                 total += (1 - (cols[i]/cols[i+11]))
                 probs.append(total)
         choice = random.uniform(0,total)
-        index = 1
         for i in range(len(probs)):
             if(choice < probs[i]):
-                index = i
                 break
         category = cat_list[i]
         req_url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
@@ -173,7 +171,6 @@ def get_question(facebook_id):
     req = requests.get(req_url, )
     dic = req.json()
 
-    category = dic.get("results")[0].get("category")
     difficulty = dic.get("results")[0].get("difficulty")
     question = dic.get("results")[0].get("question")
     incorrect_answers = dic.get("results")[0].get("incorrect_answers")

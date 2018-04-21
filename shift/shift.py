@@ -17,11 +17,10 @@ cat_dict = {"Entertainment: Books": 9, "Entertainment: Film": 10,
             "History": 23, "Politics": 24,"Art": 25}
 
 
-app = Flask(__name__) # create the application instance :)
-app.config.from_object(__name__) # load config from this file , flaskr.py
+app = Flask(__name__)
+app.config.from_object(__name__)
 
 
-# Load default config and override config from an environment variable
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'shift.db'),
     SECRET_KEY='development key',
@@ -77,26 +76,31 @@ def add_entry(facebook_id):
     return jsonify({"facebook_id": facebook_id});
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
-        else:
-            session['logged_in'] = True
-            flash('You were logged in')
-            return redirect(url_for('show_users'))
-    return render_template('login.html', error=error)
+@app.route('/leaderboard', methods=['GET'])
+def leaderboard():
+    db = get_db()
+    cur = db.execute('select username, score_9 + score_10 + score_11 + score_14 + score_15 + score_17 + score_18 + score_21 + score_22 + score_23 + score_24 + score_25 from users order by 2 desc')
+    leaderboard = cur.fetchall()
+    data = []
+    for leader in leaderboard:
+        data.append(json.dumps(list(leader)))
+    return json.dumps(data)
 
 
-@app.route('/logout')
-def logout():
-    session.pop('logged_in', None)
-    flash('You were logged out')
-    return redirect(url_for('show_users'))
+@app.route('/leaderboard/<facebook_id>', methods=['GET'])
+def leaderboard_id(facebook_id):
+    db = get_db()
+    cur = db.execute('select facebook_id, score_9 + score_10 + score_11 + score_14 + score_15 + score_17 + score_18 + score_21 + score_22 + score_23 + score_24 + score_25 from users order by 2 desc')
+    leaderboard = cur.fetchall()
+
+    i = 1
+    rank = 0
+    for leader in leaderboard:
+        leader = list(leader)
+        if leader[0] == facebook_id:
+            rank = i
+        i += 1
+    return "Your ranking is " + str(rank)
 
 
 @app.route('/answer/<facebook_id>/<cat>/<correct>')
@@ -139,8 +143,7 @@ def get_question(facebook_id):
     req_url = ''
 
     if not user:
-        db.execute('insert into users (facebook_id) values (?)',
-                     [facebook_id])
+        db.execute('insert into users (facebook_id) values (?)', [facebook_id])
         db.commit()
         cur = db.execute('select * from users where facebook_id =' + facebook_id)
         user = cur.fetchone()
@@ -164,9 +167,11 @@ def get_question(facebook_id):
                 index = i
                 break
         category = cat_list[i]
-        req_url = 'https://opentdb.com/api.php?amount=1&category='+str(category)+'&type=multiple'
+        req_url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
+
     req = requests.get(req_url, )
     dic = req.json()
+
     category = dic.get("results")[0].get("category")
     difficulty = dic.get("results")[0].get("difficulty")
     question = dic.get("results")[0].get("question")
@@ -174,7 +179,6 @@ def get_question(facebook_id):
     correct_answer = dic.get("results")[0].get("correct_answer")
 
     options = incorrect_answers + [correct_answer]
-
     shuffle(options)
 
     text = "Category:"+ category + "-> " + question + "\n"
@@ -182,21 +186,15 @@ def get_question(facebook_id):
 
     for i in range(4):
         text += "<p> "+abcd[i] + " - " + options[i] + "</p>"
-
     return text
 
 
 @app.route('/')
 def show_users():
-
     db = get_db()
     cur = db.execute('select * from users order by id desc')
     users = cur.fetchall()
-
-    print("Number of users: " + str(len(users)))
-
+    data = []
     for user in users:
-        print(json.dumps(list(user)))
-    print(users)
-
-    return "fetching all users"
+        data.append(json.dumps(list(user)))
+    return json.dumps(data)

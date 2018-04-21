@@ -100,7 +100,7 @@ def leaderboard_id(facebook_id):
         if leader[0] == facebook_id:
             rank = i
         i += 1
-    return "Your ranking is " + str(rank)
+    return str(rank)
 
 
 @app.route('/answer/<facebook_id>/<cat>/<correct>')
@@ -170,7 +170,7 @@ def get_question(facebook_id):
 
     req = requests.get(req_url, )
     dic = req.json()
-
+    category = cat_dict[dic.get("results")[0].get("category")]
     difficulty = dic.get("results")[0].get("difficulty")
     question = dic.get("results")[0].get("question")
     incorrect_answers = dic.get("results")[0].get("incorrect_answers")

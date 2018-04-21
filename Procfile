@@ -1,1 +1,1 @@
-web: gunicorn -w 4 app:shift
+web: gunicorn -w 4 shift:app

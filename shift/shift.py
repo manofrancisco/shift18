@@ -188,7 +188,7 @@ def get_question(facebook_id):
 
     for i in range(4):
         text += "<p> "+abcd[i] + " - " + options[i] + "</p>"""
-    return json.dumps(res)
+    return jsonify(res)
 
 
 @app.route('/')

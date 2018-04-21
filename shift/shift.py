@@ -103,8 +103,8 @@ def leaderboard_id(facebook_id):
     return "Your ranking is " + str(rank)
 
 
-@app.route('/answer/<facebook_id>/<cat>')
-def register_answer(facebook_id, cat):
+@app.route('/answer/<facebook_id>/<cat>/<correct>')
+def register_answer(facebook_id, cat, correct):
     facebook_id = str(facebook_id)
     db = get_db()
     cur = db.execute('select * from users where facebook_id =' + str(facebook_id))

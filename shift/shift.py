@@ -64,7 +64,7 @@ def init_db():
 def initdb_command():
     """Initializes the database."""
     init_db()
-    print('Initialized the database.')
+    print('Initialized the databaseeee.')
 
 
 @app.route('/add/<facebook_id>', methods=['GET', 'POST'])
@@ -129,7 +129,6 @@ def register_answer(facebook_id, cat, correct):
     if correct == 'True':
         score = cols[15 + category_index] + 1
         statement_score = "update users set score_" + str(cat) + "=" + str(score) + " where facebook_id = '" + str(facebook_id) + "'"
-        print(statement_score)
         db.execute(statement_score)
         db.commit()
     return "processed answer"
@@ -181,12 +180,15 @@ def get_question(facebook_id):
     options = incorrect_answers + [correct_answer]
     shuffle(options)
 
+    res = {"category": category, "question": question, "options": options, "correct_answer": correct_answer}
+
+    """
     text = "Category:"+ category + "-> " + question + "\n"
     abcd = "ABCD"
 
     for i in range(4):
-        text += "<p> "+abcd[i] + " - " + options[i] + "</p>"
-    return text
+        text += "<p> "+abcd[i] + " - " + options[i] + "</p>"""
+    return json.dumps(res)
 
 
 @app.route('/')

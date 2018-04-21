@@ -3,10 +3,13 @@ import os
 import sqlite3
 import requests
 import json
-from random import shuffle
+from random import shuffle, uniform;
+import random
 from flask import Flask, request, jsonify, session, g, redirect, url_for, abort, \
      render_template, flash
 
+cat_list = [9,10,11,14,15,17,18,21,22,23,24,25]
+cat_dict = {"Entertainment: Books":9,"Entertainment: Film":10,"Entertainment: Music":11,"Entertainment: Television": 14,"Entertainment: Video Games":15, "Science & Nature":17,"Science: Computers": 18,"Sports": 21,"Geography": 22, "History": 23, "Politics": 24,"Art": 25}
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , flaskr.py
@@ -92,24 +95,44 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_users'))
 
-
+@app.route('/answer/<id>/<cat>/<correct>')
+def register_answer(id,cat,correct):
+    #register answer buoy
+    return
 
 @app.route('/get_question/<facebook_id>', methods=['GET', 'POST'])
 def get_question(facebook_id):
     db = get_db()
     cur = db.execute('select * from users where facebook_id =' + facebook_id)
     user = cur.fetchone()
-
+    cols = list(user)
+    req_url = ''
     if not user:
         db.execute('insert into users (facebook_id) values (?)',
                      [facebook_id])
         db.commit()
         cur = db.execute('select * from users where facebook_id =' + facebook_id)
         user = cur.fetchone()
-
-    print(json.dumps(list(user)))
-
-    req = requests.get('https://opentdb.com/api.php?amount=1&type=multiple', )
+        req_url = "https://opentdb.com/api.php?amount=1&type=multiple"
+    else:
+        probs = list()
+        total = 0
+        for i in range(len(cols[2:14])):
+            if(cols[i+11] == 0):
+                total += 1
+                probs.append(total)
+            else:
+                total += (1 - (cols[i]/cols[i+11]))
+                probs.append(total)
+        choice = random.uniform(0,total)
+        index = 1
+        for i in range(len(probs)):
+            if(choice < probs[i]):
+                index = i
+                break
+        category = cat_list[i]
+        req_url = 'https://opentdb.com/api.php?amount=1&category='+str(category)+'&type=multiple'
+    req = requests.get(req_url, )
     dic = req.json()
     category = dic.get("results")[0].get("category")
     difficulty = dic.get("results")[0].get("difficulty")
@@ -121,12 +144,11 @@ def get_question(facebook_id):
 
     shuffle(options)
 
-    text = question + "\n"
+    text = "Category:"+ category + "-> " + question + "\n"
     abcd = "ABCD"
 
     for i in range(4):
-        text += abcd[i] + " - " + options[i] + "\n"
-    print(text)
+        text += "<p> "+abcd[i] + " - " + options[i] + "</p>"
 
     return text
 
@@ -143,4 +165,4 @@ def show_users():
     print(users)
 
 
-    return "oi"
+    return "oi/"

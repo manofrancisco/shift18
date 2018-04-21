@@ -103,8 +103,8 @@ def leaderboard_id(facebook_id):
     return "Your ranking is " + str(rank)
 
 
-@app.route('/answer/<facebook_id>/<cat>/<correct>')
-def register_answer(facebook_id, cat, correct):
+@app.route('/answer/<facebook_id>/<cat>')
+def register_answer(facebook_id, cat):
     facebook_id = str(facebook_id)
     db = get_db()
     cur = db.execute('select * from users where facebook_id =' + str(facebook_id))
@@ -131,7 +131,7 @@ def register_answer(facebook_id, cat, correct):
         statement_score = "update users set score_" + str(cat) + "=" + str(score) + " where facebook_id = '" + str(facebook_id) + "'"
         db.execute(statement_score)
         db.commit()
-    return "processed answer"
+    return jsonify({"count": count, "score": score})
 
 
 @app.route('/get_question/<facebook_id>', methods=['GET', 'POST'])

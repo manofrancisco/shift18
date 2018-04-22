@@ -9,9 +9,9 @@ from flask import Flask, request, jsonify, session, g, redirect, url_for, abort,
      render_template, flash
 
 
-cat_list = [9, 10, 11, 14, 15, 17, 18, 21, 22, 23, 24, 25]
-cat_dict = {"Entertainment: Books": 9, "Entertainment: Film": 10,
-            "Entertainment: Music": 11, "Entertainment: Television": 14,
+cat_list = [10, 11, 12, 14, 15, 17, 18, 21, 22, 23, 24, 25]
+cat_dict = {"Entertainment: Books": 10, "Entertainment: Film": 11,
+            "Entertainment: Music": 12, "Entertainment: Television": 14,
             "Entertainment: Video Games" : 15, "Science & Nature" : 17,
             "Science: Computers": 18, "Sports": 21, "Geography": 22,
             "History": 23, "Politics": 24,"Art": 25}
@@ -169,7 +169,7 @@ def get_question(facebook_id):
         req_url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
 
     req = requests.get(req_url)
-    print(req.headers)
+    req.encoding = 'utf-8'
     dic = req.json()
     category = cat_dict[dic.get("results")[0].get("category")]
     difficulty = dic.get("results")[0].get("difficulty")
@@ -181,7 +181,6 @@ def get_question(facebook_id):
     shuffle(options)
 
     res = {"category": category, "question": question, "options": options, "correct_answer": correct_answer}
-
     return jsonify(res)
 
 

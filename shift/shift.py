@@ -68,7 +68,7 @@ def initdb_command():
 
 
 @app.route('/initdb')
-def add_entry(facebook_id):
+def init_dbb(facebook_id):
     init_db()
     return "oi"
 

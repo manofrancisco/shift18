@@ -148,7 +148,7 @@ def get_question(facebook_id):
         db.commit()
         cur = db.execute('select * from users where facebook_id =' + facebook_id)
         user = cur.fetchone()
-        req_url = "https://opentdb.com/api.php?amount=1&type=multiple"
+        req_url = 'https://opentdb.com/api.php?amount=1&category=' + str(cat_list[random.randint(0, 11)]) + '&type=multiple'
 
     else:
         cols = list(user)
@@ -168,7 +168,8 @@ def get_question(facebook_id):
         category = cat_list[i]
         req_url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
 
-    req = requests.get(req_url, )
+    req = requests.get(req_url)
+    print(req.headers)
     dic = req.json()
     category = cat_dict[dic.get("results")[0].get("category")]
     difficulty = dic.get("results")[0].get("difficulty")
@@ -181,12 +182,6 @@ def get_question(facebook_id):
 
     res = {"category": category, "question": question, "options": options, "correct_answer": correct_answer}
 
-    """
-    text = "Category:"+ category + "-> " + question + "\n"
-    abcd = "ABCD"
-
-    for i in range(4):
-        text += "<p> "+abcd[i] + " - " + options[i] + "</p>"""
     return jsonify(res)
 
 

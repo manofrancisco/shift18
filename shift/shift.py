@@ -67,13 +67,19 @@ def initdb_command():
     print('Initialized the databaseeee.')
 
 
+@app.route('/initdb')
+def add_entry(facebook_id):
+    init_db()
+    return "oi"
+
+
 @app.route('/add/<facebook_id>', methods=['GET', 'POST'])
 def add_entry(facebook_id):
     db = get_db()
     db.execute('insert into users (facebook_id) values (?)',
                  [facebook_id])
     db.commit()
-    return jsonify({"facebook_id": facebook_id});
+    return jsonify({"facebook_id": facebook_id})
 
 
 @app.route('/leaderboard', methods=['GET'])

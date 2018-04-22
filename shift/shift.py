@@ -188,9 +188,9 @@ def get_question(facebook_id):
 @app.route('/')
 def show_users():
     db = get_db()
-    cur = db.execute('select * from users order by id desc')
-    users = cur.fetchall()
+    cur = db.execute('select username, score_9 + score_10 + score_11 + score_14 + score_15 + score_17 + score_18 + score_21 + score_22 + score_23 + score_24 + score_25 from users order by 2 desc')
+    leaderboard = cur.fetchall()
     data = []
-    for user in users:
-        data.append(json.dumps(list(user)))
-    return json.dumps(data)
+    for leader in leaderboard:
+        data.append(list(leader))
+    return render_template('users.html', users=data)

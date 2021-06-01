@@ -9,5 +9,5 @@ Jinja2==2.10
 MarkupSafe==1.0
 requests==2.18.4
 -e git+https://github.com/manofrancisco/shift18.git@ace99d857593867ebeefe289f9bcd0a8ffad4646#egg=shift
-urllib3==1.22
+urllib3==1.26.5
 Werkzeug==0.14.1
